@@ -1,0 +1,11 @@
+<div class="board">
+
+  <div class="row" *ngFor="let row of board">
+
+    <div class="tile" *ngFor="let letter of row">
+      {{ letter | uppercase }}
+    </div>
+
+  </div>
+
+</div>
