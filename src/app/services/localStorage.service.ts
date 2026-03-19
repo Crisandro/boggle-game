@@ -18,7 +18,7 @@ export class LocalStorageService {
     this.updated$.next();
   }
 
-  public getObjectItem<T>(key: string): T | null {
+  public getObjectItem<T>(key: string): any {
     const encryptedValue = localStorage.getItem(key);
 
     if (!encryptedValue) return null;

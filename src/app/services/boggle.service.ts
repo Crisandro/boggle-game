@@ -16,7 +16,7 @@ export class BoggleService {
 
   constructor(private http: HttpClient) {}
 
-  getBoard(size: number): Observable<BoggleResponse> {
+  public getBoard(size: number): Observable<BoggleResponse> {
     return this.http.get<BoggleResponse>(`${this.API}?size=${size}`);
   }
 }
