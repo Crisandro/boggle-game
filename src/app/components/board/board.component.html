@@ -1,11 +1,24 @@
 <div *ngIf="boardData()" class="board">
-
-  <div class="row" *ngFor="let row of boardData().board">
-
-    <div class="tile" *ngFor="let letter of row">
-      {{ letter | uppercase }}
+  <div class="row" *ngFor="let row of boardData().board; let i = index">
+    <div class="tile" *ngFor="let letter of row; let j = index">
+      <div
+        [attr.data-row]="i"
+        [attr.data-col]="j"
+        (mousedown)="startSelection(i, j)"
+        (mouseenter)="extendSelection(i, j)"
+        (mouseup)="endSelection()"
+        (touchstart)="startSelection(i, j)"
+        (touchmove)="onTouchMove($event)"
+        (touchend)="endSelection()"
+        [class.selected]="isSelected(i, j)"
+      >
+        {{ letter | uppercase }}
+      </div>
     </div>
-
   </div>
-
+</div>
+<div class="result">
+  Word: {{ currentWord }}
+  <br/>
+  Correct Words: {{correctWords}}
 </div>
