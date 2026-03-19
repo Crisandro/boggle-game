@@ -1,3 +1,4 @@
 export enum SessionStorageKeys {
-    testsession = "test"
+    testsession = "test",
+    CurrentBoard = "current-board"
 }

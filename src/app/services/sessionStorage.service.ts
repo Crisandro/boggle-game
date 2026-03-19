@@ -18,7 +18,7 @@ export class SessionStorageService {
     this.updated$.next();
   }
 
-  public getObjectItem<T>(key: string): T | null {
+  public getObjectItem<T>(key: string): any {
     const encryptedValue = sessionStorage.getItem(key);
 
     if (!encryptedValue) return null;

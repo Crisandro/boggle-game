@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { BoggleService, BoggleResponse } from '../../services/boggle.service';
 import { CommonModule } from '@angular/common';
 import { SessionStorageService } from '../../services/sessionStorage.service';
@@ -14,26 +14,32 @@ import { LocalStorageKeys } from '../../enums/localStorageKeys.enum';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent implements OnInit {
-
-  board: string[][] = [];
-  validWords: string[] = [];
+  protected boardData: WritableSignal<BoggleResponse>;
 
   constructor(
-    private boggleService: BoggleService,
-    private sessionStorageService: SessionStorageService,
-    private localStorageService: LocalStorageService
-  ) {}
+    private readonly boggleService: BoggleService,
+    private readonly sessionStorageService: SessionStorageService,
+    private readonly localStorageService: LocalStorageService
+  ) {
+    this.boardData = signal<BoggleResponse>(
+      this.sessionStorageService.getObjectItem<BoggleResponse>(SessionStorageKeys.CurrentBoard)
+    );
+  }
+  
 
-  ngOnInit(): void {
-    this.loadBoard(7);
+  public ngOnInit(): void {
+    this.boardData.set(this.sessionStorageService.getObjectItem<BoggleResponse>(SessionStorageKeys.CurrentBoard));
+    this.loadBoard(6);
     this.sessionandLocaltest();
   }
 
-  loadBoard(size: number) {
-    this.boggleService.getBoard(size).subscribe((data: BoggleResponse) => {
-      this.board = data.board;
-      this.validWords = data.words;
-    });
+  public loadBoard(size: number) {
+    if (!this.boardData()) {
+      this.boggleService.getBoard(size).subscribe((boardData: BoggleResponse) => {
+        this.boardData.update((board: BoggleResponse) => board = boardData);
+        this.sessionStorageService.setObjectItem<BoggleResponse>(SessionStorageKeys.CurrentBoard, boardData);
+      });
+    }
   }
 
   public sessionandLocaltest() {
