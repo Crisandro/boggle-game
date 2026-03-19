@@ -77,8 +77,10 @@ export class BoardComponent implements OnInit {
   }
 
   protected addLetter(row: number, column: number): void {
-    this.selectedPositions.push({ row, column });
-    this.currentWord += this.boardData()?.board[row][column];
+    if (!this.isSelected(row, column)) {
+      this.selectedPositions.push({ row, column });
+      this.currentWord += this.boardData()?.board[row][column];
+    }
   }
 
   protected isSelected(row: number, column: number): boolean {
