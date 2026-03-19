@@ -2,9 +2,7 @@ import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { BoggleService, BoggleResponse } from '../../services/boggle.service';
 import { CommonModule } from '@angular/common';
 import { SessionStorageService } from '../../services/sessionStorage.service';
-import { LocalStorageService } from '../../services/localStorage.service';
 import { SessionStorageKeys } from '../../enums/sessionStorageKeys.enum';
-import { LocalStorageKeys } from '../../enums/localStorageKeys.enum';
 import { Table } from '../../models/table.model';
 import { EMPTY_STRING, EXISTS, SIX, ZERO } from '../../constant/common.constant';
 
@@ -16,7 +14,6 @@ import { EMPTY_STRING, EXISTS, SIX, ZERO } from '../../constant/common.constant'
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent implements OnInit {
-
   protected boardData: WritableSignal<BoggleResponse>;
   protected isSelecting: boolean = false;
   protected selectedPositions: Table[] = [];
@@ -26,22 +23,21 @@ export class BoardComponent implements OnInit {
 
   constructor(
     private readonly boggleService: BoggleService,
-    private readonly sessionStorageService: SessionStorageService,
-    private readonly localStorageService: LocalStorageService
+    private readonly sessionStorageService: SessionStorageService
   ) {
     this.boardData = signal<BoggleResponse>(
       this.sessionStorageService.getObjectItem<BoggleResponse>(SessionStorageKeys.CurrentBoard)
     );
+    this.validWords = this.boardData()?.words;
   }
   
 
   public ngOnInit(): void {
     this.boardData.set(this.sessionStorageService.getObjectItem<BoggleResponse>(SessionStorageKeys.CurrentBoard));
     this.loadBoard(SIX);
-    this.sessionandLocaltest();
   }
 
-  loadBoard(size: number) {
+  public loadBoard(size: number): void {
     if (!this.boardData()) {
       this.boggleService.getBoard(size).subscribe((boardData: BoggleResponse) => {
         this.boardData.update((board: BoggleResponse) => board = boardData);
@@ -49,14 +45,6 @@ export class BoardComponent implements OnInit {
         this.sessionStorageService.setObjectItem<BoggleResponse>(SessionStorageKeys.CurrentBoard, boardData);
       });
     }
-  }
-
-  public sessionandLocaltest() {
-    this.sessionStorageService.setObjectItem(SessionStorageKeys.testsession, "test session storage");
-    console.log(this.sessionStorageService.getObjectItem(SessionStorageKeys.testsession));
-
-    this.localStorageService.setObjectItem(LocalStorageKeys.localtest, "local storage test");
-    console.log(this.localStorageService.getObjectItem(LocalStorageKeys.localtest));
   }
 
   protected startSelection(row: number, column: number): void {
@@ -67,27 +55,27 @@ export class BoardComponent implements OnInit {
   }
 
   protected extendSelection(row: number, column: number): void {
-  if (!this.isSelecting) return;
-  this.addLetter(row, column);
+    if (!this.isSelecting) return;
+    this.addLetter(row, column);
   }
 
   protected endSelection(): void {
-  this.isSelecting = false;
-  this.validWords.forEach(word => {
-    if (word === this.currentWord) {
+    this.isSelecting = false;
+    if (this.validWords.includes(this.currentWord)) {
       this.checkWordExists(this.currentWord);
-      }
-    });
+    }
   }
 
   protected checkWordExists(currentWord: string): void {
-  if (this.correctWords.includes(currentWord)) {
-    alert(EXISTS);
-    return;
+    if (this.correctWords.includes(currentWord)) {
+      alert(EXISTS);
+      return;
+    }
+
+    this.correctWords = [...this.correctWords, currentWord];
+    this.currentWord = EMPTY_STRING;
   }
 
-  this.correctWords = [...this.correctWords, currentWord];
-}
   protected addLetter(row: number, column: number): void {
     this.selectedPositions.push({ row, column });
     this.currentWord += this.boardData()?.board[row][column];
