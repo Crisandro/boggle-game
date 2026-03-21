@@ -1,16 +1,15 @@
-<div *ngIf="boardData()" class="board">
+<div 
+  *ngIf="boardData()"
+  class="board"
+  (pointerdown)="onPointerDown($event)"
+  (pointermove)="onPointerMove($event)"
+>
   <div class="row" *ngFor="let row of boardData().board; let i = index">
-    <div class="tile" *ngFor="let letter of row; let j = index">
+    <div class="tile" [class.selected]="isSelectedTile(i, j)" *ngFor="let letter of row; let j = index">
       <div
+        class="tile-letter"
         [attr.data-row]="i"
         [attr.data-col]="j"
-        (mousedown)="startSelection(i, j)"
-        (mouseenter)="extendSelection(i, j)"
-        (mouseup)="endSelection()"
-        (touchstart)="startSelection(i, j)"
-        (touchmove)="onTouchMove($event)"
-        (touchend)="endSelection()"
-        [class.selected]="isSelected(i, j)"
       >
         {{ letter | uppercase }}
       </div>
@@ -18,7 +17,7 @@
   </div>
 </div>
 <div class="result">
-  Word: {{ currentWord }}
+  Word: {{ boggleService.currentWord() }}
   <br/>
   Correct Words: {{correctWords}}
 </div>

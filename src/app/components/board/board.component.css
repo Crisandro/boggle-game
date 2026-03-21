@@ -2,6 +2,14 @@
   display: grid;
   gap: 5px;
   width: fit-content;
+  touch-action: none;
+}
+
+.board,
+.tile,
+.tile-letter {
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .row {
@@ -25,6 +33,7 @@
   user-select: none;
   transition: all 0.5s ease;
   z-index: 1;
+  border-radius: 10px;
 }
 
 .tile::before {
@@ -43,7 +52,7 @@
   transform: rotate(-45deg);
   transition: all 0.5s ease;
   opacity: 0;
-  z-index: 0; /* behind text */
+  z-index: 0;
 }
 
 .tile:hover {
@@ -54,4 +63,18 @@
 .tile:hover::before {
   opacity: 1;
   transform: rotate(-45deg) translateY(100%);
+}
+
+.tile-letter {
+  -webkit-user-drag: none;
+  touch-action: none;
+  width: 60%;
+  height: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.selected {
+  background-color: aqua;
 }
