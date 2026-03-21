@@ -1,0 +1,16 @@
+<div class="menu-toggle" [class.active]="openMenu" (click)="toggleMenu()">
+  <span class="bar"></span>
+  <span class="bar"></span>
+  <span class="bar"></span>
+</div>
+
+<div *ngIf="openMenu" class="main-menu" (click)="toggleMenu()">
+  <div class="main-buttons">
+    <input
+      type="button"
+      class="restart-button"
+      value="RESTART"
+      (click)="restartGame()"
+    />
+  </div>
+</div>

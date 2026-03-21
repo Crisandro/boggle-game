@@ -4,4 +4,5 @@ body {
     overflow-x: hidden;
     overflow-y: hidden;
     margin-top: -21px;
+    background: radial-gradient(circle at top, #1e293b, #020617);
 }
