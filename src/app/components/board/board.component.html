@@ -1,10 +1,13 @@
-<div 
-  *ngIf="boardData()"
+<div
+  *ngIf="boggleService.boardData()"
   class="board"
   (pointerdown)="onPointerDown($event)"
   (pointermove)="onPointerMove($event)"
 >
-  <div class="row" *ngFor="let row of boardData().board; let i = index">
+  <div class="overall-score">
+    {{ "Score: " + boggleService.overAllScore() }}
+  </div>
+  <div class="row" *ngFor="let row of boggleService.boardData().board; let i = index">
     <div class="tile" [class.selected]="isSelectedTile(i, j)" *ngFor="let letter of row; let j = index">
       <div
         class="tile-letter"
@@ -15,9 +18,10 @@
       </div>
     </div>
   </div>
-</div>
-<div class="result">
-  Word: {{ boggleService.currentWord() }}
-  <br/>
-  Correct Words: {{correctWords}}
+
+  <div class="word-container" [class.disable]="!isValidWord()">
+    <div class="current-word">
+      {{ boggleService.currentWord() | uppercase }}
+    </div>
+  </div>
 </div>

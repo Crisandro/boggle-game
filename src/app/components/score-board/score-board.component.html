@@ -1,0 +1,15 @@
+<div class="score-board">
+  <div class="correct-word-text">Correct Words:</div>
+  <div *ngIf="boggleService.correctWords()" class="correct-words">
+    <span 
+      [class.grey]="scoreColor(correctWord) === 'grey'"
+      [class.green]="scoreColor(correctWord) === 'green'"
+      [class.blue]="scoreColor(correctWord) === 'blue'"
+      [class.red]="scoreColor(correctWord) === 'red'"
+      [class.gold]="scoreColor(correctWord) === 'gold'"
+      *ngFor="let correctWord of boggleService.correctWords()"
+    >
+        {{ correctWord + " +" + score(correctWord) }}
+    </span>
+  </div>
+</div>
