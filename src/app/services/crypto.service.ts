@@ -6,7 +6,7 @@ import * as CryptoJS from "crypto-js";
 })
 export class CryptoService {
 
-  private readonly SECRET_KEY = "SecretKey";
+  private readonly SECRET_KEY = "SandroBoggle";
 
   public encrypt(value: unknown): string {
     return CryptoJS.AES.encrypt(
@@ -15,14 +15,14 @@ export class CryptoService {
     ).toString();
   }
 
-  public decrypt<T>(cipherText: string): T | null {
-    try {
-      const bytes = CryptoJS.AES.decrypt(cipherText, this.SECRET_KEY);
-      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+  public decrypt<T>(cipherText: string): T {
+    const bytes = CryptoJS.AES.decrypt(cipherText, this.SECRET_KEY);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
 
-      return decrypted ? JSON.parse(decrypted) as T : null;
-    } catch {
-      return null;
-    }
+    return JSON.parse(decrypted) as T;
+  }
+
+  public encryptResponse<T>(response: string): T {
+    return this.decrypt<T>(response);
   }
 }
