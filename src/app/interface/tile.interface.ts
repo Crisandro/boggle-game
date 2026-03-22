@@ -8,3 +8,8 @@ export interface ITileRects {
   col: number;
   rect: DOMRect
 }
+
+export interface BoggleResponse {
+  board: string[][];
+  words: string[];
+}

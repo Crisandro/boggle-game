@@ -1,21 +1,19 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Tile } from '../models/table.model';
+import { GetBoardResponse, Tile } from '../models/table.model';
 import { SessionStorageService } from './sessionStorage.service';
 import { SessionStorageKeys } from '../enums/sessionStorageKeys.enum';
 import { LoaderService } from './loader.service';
-
-export interface BoggleResponse {
-  board: string[][];
-  words: string[];
-}
+import { BoggleResponse } from '../interface/tile.interface';
+import { CryptoService } from './crypto.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BoggleService {
   public loaderService = inject(LoaderService);
+  public cryptoService = inject(CryptoService);
   public currentWord: WritableSignal<string>;
   public selectedTiles: WritableSignal<Array<Tile>>;
   public lastVisitedTile: WritableSignal<Tile | null>;
@@ -24,6 +22,7 @@ export class BoggleService {
   public boardData: WritableSignal<BoggleResponse>;
   public validWords: WritableSignal<Array<string>>;
   private API = "https://boggle-backend.onrender.com/generate-board";
+  // private API = "http://localhost:3000/generate-board";
 
   constructor(private http: HttpClient, private readonly sessionStorageService: SessionStorageService) {
     this.boardData = signal<BoggleResponse>(
@@ -39,18 +38,20 @@ export class BoggleService {
     this.overAllScore = signal(this.getScore());
   }
 
-  public getBoard(size: number): Observable<BoggleResponse> {
-    return this.http.get<BoggleResponse>(`${this.API}?size=${size}`);
+  public getBoard(size: number): Observable<GetBoardResponse> {
+    return this.http.get<GetBoardResponse>(`${this.API}?size=${size}`);
   }
 
   public async loadBoard(size: number, isRestart?: boolean): Promise<void> {
-    new Promise((resolve) => {
+    new Promise((resolve, reject) => {
       if (!this.boardData() || isRestart) {
         this.loaderService.toggleLoader();
-        this.getBoard(size).subscribe((boardData: BoggleResponse) => {
-          this.boardData.update((board: BoggleResponse) => board = boardData);
+        this.getBoard(size).subscribe((boardData: GetBoardResponse) => {
+          const boggleResponse: BoggleResponse = this.cryptoService.encryptResponse<BoggleResponse>(boardData.response);
+          if (!boggleResponse) reject();
+          this.boardData.update((board: BoggleResponse) => board = boggleResponse);
           this.validWords.update(validWords => validWords = this.boardData()?.words);
-          this.sessionStorageService.setObjectItem<BoggleResponse>(SessionStorageKeys.CurrentBoard, boardData);
+          this.sessionStorageService.setObjectItem<BoggleResponse>(SessionStorageKeys.CurrentBoard, boggleResponse);
           this.loaderService.toggleLoader();
           resolve(boardData);
         });

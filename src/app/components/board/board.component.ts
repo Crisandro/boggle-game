@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, HostListener, inject, NgZone, OnInit, signal, WritableSignal } from '@angular/core';
-import { BoggleService, BoggleResponse } from '../../services/boggle.service';
+import { BoggleService } from '../../services/boggle.service';
 import { CommonModule } from '@angular/common';
 import { SessionStorageService } from '../../services/sessionStorage.service';
 import { SessionStorageKeys } from '../../enums/sessionStorageKeys.enum';
