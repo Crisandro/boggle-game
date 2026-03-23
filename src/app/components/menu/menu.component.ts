@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject, signal } from "@angular/core";
-import { SIX } from "../../constant/common.constant";
+import { CommonConstant } from "../../constant/common.constant";
 import { TileService } from "../../services/tile.service";
 import { BoggleService } from "../../services/boggle.service";
 import { Tile } from "../../models/table.model";
@@ -21,19 +21,19 @@ export class MenuComponent {
   protected openMenu: boolean;
 
   constructor() {
-    this.openMenu = false;
+    this.openMenu = !Boolean(this.boggleService.boardData());
   }
 
-  public restartGame() {
-    this.boggleService.loadBoard(SIX, true).then(() =>{
-        setTimeout(() => this.tileService.cacheTileRects(), 1000);
+  public startNewGame() {
+    this.boggleService.loadBoard(CommonConstant.NUMERIC.SIX, true).then(() =>{
+        setTimeout(() => this.tileService.cacheTileRects(), CommonConstant.NUMERIC.ONE_THOUSAND);
     });
     this.boggleService.selectedTiles = signal(new Array<Tile>());
     this.boggleService.lastVisitedTile = signal(null);
-    this.boggleService.currentWord = signal("");
+    this.boggleService.currentWord = signal(CommonConstant.STRING.EMPTY_STRING);
     this.boggleService.correctWords = signal<Array<string>>(new Array<string>());
     this.sessionStorageService.setObjectItem<Array<string>>(SessionStorageKeys.CorrectWords, new Array<string>());
-    this.boggleService.overAllScore = signal(0);
+    this.boggleService.overAllScore = signal(CommonConstant.NUMERIC.ZERO);
   }
 
   public toggleMenu() {

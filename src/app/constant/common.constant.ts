@@ -1,4 +1,11 @@
-export const ZERO = 0;
-export const SIX = 6;
-export const EMPTY_STRING = "";
-export const EXISTS = "Word already exists!";
+export class CommonConstant {
+    public static readonly NUMERIC = {
+        ZERO: 0,
+        SIX: 6,
+        ONE_THOUSAND: 1000
+    }
+
+    public static readonly STRING = {
+        EMPTY_STRING: ""
+    }
+}
