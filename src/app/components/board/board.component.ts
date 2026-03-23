@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { SessionStorageService } from '../../services/sessionStorage.service';
 import { SessionStorageKeys } from '../../enums/sessionStorageKeys.enum';
 import { Tile } from '../../models/table.model';
-import { SIX } from '../../constant/common.constant';
 import { ITiles } from '../../interface/tile.interface';
 import { TileService } from '../../services/tile.service';
 
@@ -27,9 +26,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
   ) {}
 
   public ngOnInit(): void {
-    this.boggleService.loadBoard(SIX).then(() =>{
-      setTimeout(() => this.tileService.cacheTileRects(), 1000);
-    });
   }
 
   public ngAfterViewInit(): void {
