@@ -8,6 +8,11 @@ import { LoaderService } from './loader.service';
 import { BoggleResponse } from '../interface/tile.interface';
 import { CryptoService } from './crypto.service';
 
+declare global {
+  interface Window {
+    __env: any;
+  }
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -21,10 +26,10 @@ export class BoggleService {
   public overAllScore: WritableSignal<number>;
   public boardData: WritableSignal<BoggleResponse>;
   public validWords: WritableSignal<Array<string>>;
-  private API = "https://boggle-backend.onrender.com/generate-board";
-  // private API = "http://localhost:3000/generate-board";
+  private boggleUrl: string;
 
   constructor(private http: HttpClient, private readonly sessionStorageService: SessionStorageService) {
+    this.boggleUrl = window.__env.apiUrl;
     this.boardData = signal<BoggleResponse>(
       this.sessionStorageService.getObjectItem<BoggleResponse>(SessionStorageKeys.CurrentBoard)
     );
@@ -39,7 +44,7 @@ export class BoggleService {
   }
 
   public getBoard(size: number): Observable<GetBoardResponse> {
-    return this.http.get<GetBoardResponse>(`${this.API}?size=${size}`);
+    return this.http.get<GetBoardResponse>(`${this.boggleUrl}/generate-board?size=${size}`);
   }
 
   public async loadBoard(size: number, isRestart?: boolean): Promise<void> {
