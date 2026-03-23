@@ -1,5 +1,5 @@
 [build]
-  command = "ng build"
+  command = "node generate-env.js && ng build"
   publish = "dist/boggle-web/browser"
 
 [[redirects]]

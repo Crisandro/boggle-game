@@ -5,8 +5,11 @@ import * as CryptoJS from "crypto-js";
   providedIn: "root"
 })
 export class CryptoService {
+  private SECRET_KEY: string;
 
-  private readonly SECRET_KEY = "SandroBoggle";
+  constructor() {
+    this.SECRET_KEY = window.__env.cryptoKey;
+  }
 
   public encrypt(value: unknown): string {
     return CryptoJS.AES.encrypt(
