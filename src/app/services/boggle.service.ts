@@ -7,6 +7,7 @@ import { SessionStorageKeys } from '../enums/sessionStorageKeys.enum';
 import { LoaderService } from './loader.service';
 import { BoggleResponse } from '../interface/tile.interface';
 import { CryptoService } from './crypto.service';
+import { CommonConstant } from '../constant/common.constant';
 
 declare global {
   interface Window {
@@ -27,6 +28,7 @@ export class BoggleService {
   public boardData: WritableSignal<BoggleResponse>;
   public validWords: WritableSignal<Array<string>>;
   private boggleUrl: string;
+  private audio = new Audio();
 
   constructor(private http: HttpClient, private readonly sessionStorageService: SessionStorageService) {
     this.boggleUrl = window.__env.apiUrl;
@@ -41,6 +43,7 @@ export class BoggleService {
       this.sessionStorageService.getObjectItem<Array<string>>(SessionStorageKeys.CorrectWords) ?? []
     );
     this.overAllScore = signal(this.getScore());
+    this.audio = new Audio(CommonConstant.MP3.BUTTON_SOUND_FX);
   }
 
   public getBoard(size: number): Observable<GetBoardResponse> {
@@ -79,8 +82,14 @@ export class BoggleService {
       let word = "";
       this.selectedTiles()?.forEach(selectedTiles => word += selectedTiles.letter);
       this.currentWord.update(currentWord => currentWord = word);
+      this.playSoundEffect(this.audio);
     }
     this.lastVisitedTile.update((currentTile) => currentTile = tile);
+  }
+
+  public playSoundEffect(audio: HTMLAudioElement) {
+    audio.currentTime = CommonConstant.NUMERIC.ZERO;
+    audio.play().catch(() => {});
   }
 
   private spliceSelectedTile(selectedPositionIndex: number) {

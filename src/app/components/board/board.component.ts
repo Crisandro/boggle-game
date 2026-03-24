@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, HostListener, inject, NgZone, OnInit, signal, WritableSignal } from '@angular/core';
+import { AfterViewInit, Component, HostListener, inject, NgZone, OnInit } from '@angular/core';
 import { BoggleService } from '../../services/boggle.service';
 import { CommonModule } from '@angular/common';
 import { SessionStorageService } from '../../services/sessionStorage.service';
@@ -6,6 +6,7 @@ import { SessionStorageKeys } from '../../enums/sessionStorageKeys.enum';
 import { Tile } from '../../models/table.model';
 import { ITiles } from '../../interface/tile.interface';
 import { TileService } from '../../services/tile.service';
+import { CommonConstant } from '../../constant/common.constant';
 
 @Component({
   selector: 'board',
@@ -18,6 +19,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   protected readonly boggleService = inject(BoggleService);
   protected isSelecting: boolean = false;
   private lastPoint: ITiles | null = null;
+  private audio = new Audio();
 
   constructor(
     private readonly sessionStorageService: SessionStorageService,
@@ -26,6 +28,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   ) {}
 
   public ngOnInit(): void {
+    this.audio = new Audio(CommonConstant.MP3.CORRECT_SOUND_FX);
   }
 
   public ngAfterViewInit(): void {
@@ -118,7 +121,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
       this.checkWordExists(this.boggleService.currentWord());
     }
     this.boggleService.overAllScore.set(this.boggleService.getScore());
-    this.boggleService.currentWord.update(currentWord => currentWord = "");
+    this.boggleService.currentWord.update(currentWord => currentWord = CommonConstant.STRING.EMPTY_STRING);
     this.boggleService.selectedTiles.update(selectedTiles => selectedTiles = new Array<Tile>());
     this.boggleService.lastVisitedTile.update(lastVisitedTile => lastVisitedTile = null);
   }
@@ -126,10 +129,10 @@ export class BoardComponent implements OnInit, AfterViewInit {
   protected checkWordExists(currentWord: string): void {
     if (!this.boggleService.correctWords()?.includes(currentWord)) {
       this.boggleService.correctWords.update(correctWords => ([...correctWords, currentWord]));
+      this.boggleService.playSoundEffect(this.audio);
       this.sessionStorageService.setObjectItem<Array<string>>(SessionStorageKeys.CorrectWords, this.boggleService.correctWords());
     }
   }
-
   protected isValidWord(): boolean {
     return this.boggleService.validWords()?.includes(this.boggleService.currentWord()) &&
       !this.boggleService.correctWords()?.includes(this.boggleService.currentWord());

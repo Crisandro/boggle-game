@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 body {
     height: 100%;
     margin: 0px;
@@ -5,4 +7,12 @@ body {
     overflow-y: hidden;
     margin-top: -21px;
     background: radial-gradient(circle at top, #1e293b, #020617);
+}
+
+:root {
+    --alanSans: "Alan Sans", sans-serif;
+    --defaultBg: #39c9e5;
+    --mainColor: #1eb3ce;
+    --correctColor: #39e550;
+    --whiteColor: #ffffff;
 }
