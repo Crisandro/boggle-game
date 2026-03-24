@@ -9,6 +9,7 @@
   flex-direction: column;
   justify-content: flex-start;
   gap: 12px;
+  background-color: var(--defaultBg);
 }
 
 .correct-words {
@@ -27,6 +28,7 @@
   font-weight: 700;
   color: aliceblue;
   padding: 10px;
+  font-family: var(--alanSans);
 }
 
 .correct-words span {
@@ -41,19 +43,23 @@
 
 .grey {
   border: #516483 1px solid;
+  font-family: var(--alanSans);
 }
 
 .green {
   border: #518358 1px solid;
+  font-family: var(--alanSans);
 }
 
 .blue {
   border: #1841e6 2px solid;
+  font-family: var(--alanSans);
 }
 
 .red {
   border: #832727 1px solid;
   position: relative;
+  font-family: var(--alanSans);
 }
 
 .red:before, .red:after {
