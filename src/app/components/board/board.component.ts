@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, HostListener, inject, NgZone, OnInit } from '@angular/core';
+import { Component, HostListener, inject, NgZone, OnInit } from '@angular/core';
 import { BoggleService } from '../../services/boggle.service';
 import { CommonModule } from '@angular/common';
 import { SessionStorageService } from '../../services/sessionStorage.service';
@@ -7,6 +7,7 @@ import { Tile } from '../../models/table.model';
 import { ITiles } from '../../interface/tile.interface';
 import { TileService } from '../../services/tile.service';
 import { CommonConstant } from '../../constant/common.constant';
+import { TimerService } from '../../services/timer.service';
 
 @Component({
   selector: 'board',
@@ -15,8 +16,9 @@ import { CommonConstant } from '../../constant/common.constant';
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
-export class BoardComponent implements OnInit, AfterViewInit {
+export class BoardComponent implements OnInit {
   protected readonly boggleService = inject(BoggleService);
+  protected readonly timerService = inject(TimerService);
   protected isSelecting: boolean = false;
   private lastPoint: ITiles | null = null;
   private audio = new Audio();
@@ -31,10 +33,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.audio = new Audio(CommonConstant.MP3.CORRECT_SOUND_FX);
   }
 
-  public ngAfterViewInit(): void {
-    this.tileService.cacheTileRects();
-  }
-
   protected onPointerDown(event: PointerEvent) {
     this.isSelecting = true;
     this.lastPoint = { tileRow: event.clientX, tileColumn: event.clientY };
@@ -42,7 +40,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   protected onPointerMove(event: PointerEvent) {
-    if (!this.isSelecting || !this.lastPoint) return;
+    if (!this.isSelecting || !this.lastPoint || this.timerService.secondsLeft() <= 0) return;
 
     this.ngZone.runOutsideAngular(() => {
       this.interpolatePoints(this.lastPoint!, {
@@ -121,9 +119,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
       this.checkWordExists(this.boggleService.currentWord());
     }
     this.boggleService.overAllScore.set(this.boggleService.getScore());
-    this.boggleService.currentWord.update(currentWord => currentWord = CommonConstant.STRING.EMPTY_STRING);
-    this.boggleService.selectedTiles.update(selectedTiles => selectedTiles = new Array<Tile>());
-    this.boggleService.lastVisitedTile.update(lastVisitedTile => lastVisitedTile = null);
+    this.boggleService.currentWord.set(CommonConstant.STRING.EMPTY_STRING);
+    this.boggleService.selectedTiles.set(new Array<Tile>());
+    this.boggleService.lastVisitedTile.set(null);
   }
 
   protected checkWordExists(currentWord: string): void {
@@ -140,16 +138,25 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
   @HostListener('document:mouseup')
   public onMouseUp() {
-    this.endSelection();
+    if (this.timerService.secondsLeft() > 0) {
+      this.endSelection();
+    }
   }
 
   @HostListener('document:touchend')
   public onTouchEnd() {
-    this.endSelection();
+    if (this.timerService.secondsLeft() > 0) {
+      this.endSelection();
+    }
   }
 
   @HostListener('window:resize')
   public onResize(): void {
-    this.tileService.cacheTileRects();
+    if (this.timerService.secondsLeft() > 0) {
+      requestAnimationFrame(() => {
+        this.tileService.cacheTileElements();
+        this.tileService.cacheTileRects();
+      });
+    }
   }
 }

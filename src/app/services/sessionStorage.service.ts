@@ -38,4 +38,16 @@ export class SessionStorageService {
   public get valueChanges(): Observable<void> {
     return this.updated$.asObservable();
   }
+
+  public setSessionTimer(key: string): void {
+    const expiry: number = Date.now() + Math.abs(window.__env.defaultTimer) * 1000;
+    const sessionTimerValue: string = this.cryptoService.encrypt(expiry.toString());
+    sessionStorage.setItem(key, sessionTimerValue);
+  }
+
+  public getRemainingTime(key: string): number {
+    return sessionStorage.getItem(key)
+      ? (parseInt(this.cryptoService.decrypt(sessionStorage.getItem(key) ?? "")) - Date.now()) / 1000
+      : 0;
+  }
 }

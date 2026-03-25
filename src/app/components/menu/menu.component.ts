@@ -6,6 +6,7 @@ import { BoggleService } from "../../services/boggle.service";
 import { Tile } from "../../models/table.model";
 import { SessionStorageService } from "../../services/sessionStorage.service";
 import { SessionStorageKeys } from "../../enums/sessionStorageKeys.enum";
+import { TimerService } from "../../services/timer.service";
 
 @Component({
   selector: 'main-menu',
@@ -17,6 +18,7 @@ import { SessionStorageKeys } from "../../enums/sessionStorageKeys.enum";
 export class MenuComponent {
   private tileService = inject(TileService);
   private boggleService = inject(BoggleService);
+  private timerService = inject(TimerService);
   private sessionStorageService = inject(SessionStorageService);
   protected openMenu: boolean;
 
@@ -26,7 +28,12 @@ export class MenuComponent {
 
   public startNewGame() {
     this.boggleService.loadBoard(CommonConstant.NUMERIC.SIX, true).then(() =>{
-        setTimeout(() => this.tileService.cacheTileRects(), CommonConstant.NUMERIC.ONE_THOUSAND);
+        requestAnimationFrame(() => {
+          this.tileService.cacheTileElements();
+          this.tileService.cacheTileRects();
+        });
+        this.timerService.timerStart();
+        this.timerService.getRemainingTime();
     });
     this.boggleService.selectedTiles = signal(new Array<Tile>());
     this.boggleService.lastVisitedTile = signal(null);

@@ -1,5 +1,6 @@
 
 window.__env = {
   apiUrl: "https://boggle-backend.onrender.com",
-  cryptoKey: "SandroBoggle"
+  cryptoKey: "SandroBoggle",
+  defaultTimer: "300"
 };

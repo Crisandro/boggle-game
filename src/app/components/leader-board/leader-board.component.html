@@ -1,0 +1,52 @@
+<div *ngIf="this.timerService.secondsLeft() < 0 && leaderBoards().length" class="leader-board-body">
+  <div id="leaderboard">
+    <div class="leader-board-text">LEADER BOARD</div>
+    <div class="ribbon"></div>
+    <table>
+      <tr
+        [class.current-score]="leaderBoardIndex === leaderBoardsService.currentRank()"
+        *ngFor="let leaderBoard of leaderBoards(); let leaderBoardIndex = index"
+      >
+        <td class="number">{{ leaderBoardIndex + 1 }}</td>
+        <td class="name">{{ leaderBoardIndex === leaderBoardsService.currentRank() ? leaderBoardsService.userName() : leaderBoard.name }}</td>
+        <td class="points">
+          {{ leaderBoardIndex === leaderBoardsService.currentRank() ? boggleService.overAllScore() : leaderBoard.score }}
+          <img *ngIf="leaderBoardIndex === 0" class="gold-medal" src="https://github.com/malunaridev/Challenges-iCodeThis/blob/master/4-leaderboard/assets/gold-medal.png?raw=true" alt="gold medal"/>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="leaderboard-form">
+    <div class="new-topScore">
+      <div *ngIf="10 > leaderBoardsService.currentRank()">New Top Score! Please enter your name.</div>
+      <div *ngIf="10 < leaderBoardsService.currentRank()">You did your best, Keep up the leader board next time!</div>
+      <div class="new-Score">{{ this.boggleService.overAllScore() }}</div>
+      <div *ngIf="10 > leaderBoardsService.currentRank()" class="top-score-form">
+        <div id="userName">
+          <input
+            type="text"
+            placeholder="Enter your name"
+            class="userName"
+            [value]="leaderBoardsService.userName()"
+            (input)="onNameInput($event)"
+          />
+          <div class="line"></div>
+        </div>
+        <input
+          type="button"
+          value="Submit"
+          class="submit-score"
+          (click)="submitScore()"
+        />
+      </div>
+    </div>
+    <div>
+      <input
+        type="button"
+        class="start-button"
+        value="Start New Game"
+        (click)="startNewGame()"
+      />
+    </div>
+  </div>
+</div>
