@@ -1,7 +1,3 @@
-import { inject } from "@angular/core";
-import { BoggleResponse } from "../interface/tile.interface";
-import { CryptoService } from "../services/crypto.service";
-
 export class Tile {
   constructor(
     public row: number,

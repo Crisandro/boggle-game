@@ -8,6 +8,8 @@ import { LoaderService } from './loader.service';
 import { BoggleResponse } from '../interface/tile.interface';
 import { CryptoService } from './crypto.service';
 import { CommonConstant } from '../constant/common.constant';
+import { TileService } from './tile.service';
+import { TimerService } from './timer.service';
 
 declare global {
   interface Window {
@@ -20,6 +22,8 @@ declare global {
 export class BoggleService {
   public loaderService = inject(LoaderService);
   public cryptoService = inject(CryptoService);
+  public tileService = inject(TileService);
+  public timerService = inject(TimerService);
   public currentWord: WritableSignal<string>;
   public selectedTiles: WritableSignal<Array<Tile>>;
   public lastVisitedTile: WritableSignal<Tile | null>;
@@ -51,7 +55,7 @@ export class BoggleService {
   }
 
   public async loadBoard(size: number, isRestart?: boolean): Promise<void> {
-    new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       if (!this.boardData() || isRestart) {
         this.loaderService.toggleLoader();
         this.getBoard(size).subscribe((boardData: GetBoardResponse) => {
@@ -61,7 +65,7 @@ export class BoggleService {
           this.validWords.update(validWords => validWords = this.boardData()?.words);
           this.sessionStorageService.setObjectItem<BoggleResponse>(SessionStorageKeys.CurrentBoard, boggleResponse);
           this.loaderService.toggleLoader();
-          resolve(boardData);
+          resolve();
         });
       }
     })
