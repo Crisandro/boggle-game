@@ -1,9 +1,9 @@
 import { inject, Injectable, signal, WritableSignal } from "@angular/core";
-import { LoaderService } from "./loader.service";
-import { BoggleService } from "./boggle.service";
-import { LeaderBoard } from "../models/leaderBoard.model";
+import { LeaderBoard, UserData } from "../models/leaderBoard.model";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { SessionStorageService } from "./sessionStorage.service";
+import { SessionStorageKeys } from "../enums/sessionStorageKeys.enum";
 
 @Injectable({
   providedIn: 'root'
@@ -11,13 +11,17 @@ import { Observable } from "rxjs";
 export class LeaderBoardService {
   public userName: WritableSignal<string>;
   public currentRank: WritableSignal<number>;
+  private sessionStorageService = inject(SessionStorageService);
   
   constructor(
     private http: HttpClient
   ) {
-    this.userName = signal<string>("");
-    this.currentRank = signal(0);
-    
+    this.userName = signal<string>(
+      this.sessionStorageService.getObjectItem<UserData>(SessionStorageKeys.UserData)?.name ?? ""
+    );
+    this.currentRank = signal<number>(
+      this.sessionStorageService.getObjectItem<UserData>(SessionStorageKeys.UserData)?.currentRank
+    );
   }
 
   public getLeaderBoard(): Observable<Array<LeaderBoard>> {
@@ -44,8 +48,12 @@ export class LeaderBoardService {
       }
     });
 
+    const userData = new LeaderBoard(this.userName(), overallScore, this.getTopThreeWords(correctWords));
+    this.sessionStorageService.setObjectItem<UserData>(
+      SessionStorageKeys.UserData,
+      new UserData(this.userName(), this.currentRank(), this.getTopThreeWords(correctWords), overallScore)
+    );
     if (this.currentRank() < 10) {
-      const userData = new LeaderBoard(this.userName(), overallScore, this.getTopThreeWords(correctWords));
       leaderBoard.length > this.currentRank() ?
         leaderBoard.splice(this.currentRank(), 0, userData) :
         leaderBoard.push(userData);
@@ -60,5 +68,13 @@ export class LeaderBoardService {
   public getTopThreeWords(correctWords: Array<string>): Array<string> {
     correctWords.sort((a,b) => a.length - b.length);
     return correctWords.slice(-3);
+  }
+
+  public saveNewLeaderBoard(leaderBoard: Array<LeaderBoard>): void {
+    const userData: UserData = this.sessionStorageService.getObjectItem<UserData>(SessionStorageKeys.UserData);
+    leaderBoard[this.currentRank()].name = this.userName() ?? "";
+    leaderBoard[this.currentRank()].score = userData?.overAllScore ?? 0;
+    leaderBoard[this.currentRank()].words = userData?.topWords ?? [];
+    this.sessionStorageService.setObjectItem<Array<LeaderBoard>>(SessionStorageKeys.LeaderBoard, leaderBoard);
   }
 }

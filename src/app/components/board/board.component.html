@@ -11,7 +11,11 @@
     time remaining: {{ timerService.secondsLeft() }}
   </div>
   <div class="row" *ngFor="let row of boggleService.boardData().board; let i = index">
-    <div class="tile" [class.selected]="isSelectedTile(i, j)" *ngFor="let letter of row; let j = index">
+    <div
+      class="tile"
+      [class.selected]="isSelectedTile(i, j)"
+      *ngFor="let letter of row; let j = index"
+    >
       <div
         class="tile-letter"
         [attr.data-row]="i"

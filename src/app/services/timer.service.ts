@@ -17,6 +17,9 @@ export class TimerService {
     private zone: NgZone
   ) {
     this.secondsLeft = signal(this.sessionStorageService.getRemainingTime(SessionStorageKeys.GameStart) ?? 0);
+    if (this.secondsLeft() > 0) { 
+      this.getRemainingTime();
+    }
   }
 
   public timerStart() {
@@ -27,7 +30,7 @@ export class TimerService {
     this.zone.runOutsideAngular(() => {
       this.countdownSub = timer(0, 1000).subscribe(() => {
         this.zone.run(() => {
-          this.secondsLeft.set(this.sessionStorageService.getRemainingTime(SessionStorageKeys.GameStart));
+          this.secondsLeft.set(this.sessionStorageService.getRemainingTime(SessionStorageKeys.GameStart) ?? 0);
           if (this.secondsLeft() < 0) {
             this.endTimer();
           }
