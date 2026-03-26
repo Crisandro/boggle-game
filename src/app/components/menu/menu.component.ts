@@ -28,12 +28,8 @@ export class MenuComponent {
 
   public startNewGame() {
     this.boggleService.loadBoard(CommonConstant.NUMERIC.SIX, true).then(() =>{
-        requestAnimationFrame(() => {
-          this.tileService.cacheTileElements();
-          this.tileService.cacheTileRects();
-        });
-        this.timerService.timerStart();
-        this.timerService.getRemainingTime();
+      this.timerService.timerStart();
+      this.timerService.getRemainingTime();
     });
     this.boggleService.selectedTiles = signal(new Array<Tile>());
     this.boggleService.lastVisitedTile = signal(null);

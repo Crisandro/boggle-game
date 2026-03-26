@@ -31,6 +31,10 @@ export class BoardComponent implements OnInit {
 
   public ngOnInit(): void {
     this.audio = new Audio(CommonConstant.MP3.CORRECT_SOUND_FX);
+    requestAnimationFrame(() => {
+      this.tileService.cacheTileElements();
+      this.tileService.cacheTileRects();
+    });
   }
 
   protected onPointerDown(event: PointerEvent) {

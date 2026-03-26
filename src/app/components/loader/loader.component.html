@@ -1,3 +1,10 @@
 <div *ngIf="loaderService.showLoader()" class="loader">
-  <div class="loader-icon"></div>
+  <div class="boggle-loader">
+    <div class="cell"
+        *ngFor="let letter of grid"
+        [class.settled]="isSettling">
+      {{ letter }}
+    </div>
+  </div>
+  <div class="loading"></div>
 </div>

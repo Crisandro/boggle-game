@@ -28,10 +28,14 @@ export class LeaderBoardComponent {
   protected timerService = inject(TimerService);
   protected tileService = inject(TileService);
   protected leaderBoardsService = inject(LeaderBoardService);
+  protected scoreRecorded: WritableSignal<boolean>;
   public leaderBoards: WritableSignal<Array<LeaderBoard>>;
   
   constructor(private http: HttpClient) {
-    this.leaderBoards = signal<Array<LeaderBoard>>(new Array<LeaderBoard>());
+    this.scoreRecorded = signal(this.sessionStorageService.getObjectItem<boolean>(SessionStorageKeys.ScoreRecorded) ?? false);
+    this.leaderBoards = signal<Array<LeaderBoard>>(
+      this.sessionStorageService.getObjectItem<Array<LeaderBoard>>(SessionStorageKeys.LeaderBoard) ?? []
+    );
     effect(() => {
       if (this.timerService.secondsLeft() < 0 && !this.leaderBoards()?.length) {
         setTimeout(() => this.onGameEnd());
@@ -40,7 +44,7 @@ export class LeaderBoardComponent {
   }
 
   private onGameEnd(): void {
-    if (this.hasFinalized) return;
+    if (this.hasFinalized || this.scoreRecorded() || this.leaderBoards().length) return;
 
     this.hasFinalized = true;
     this.loaderService.toggleLoader();
@@ -52,6 +56,7 @@ export class LeaderBoardComponent {
           leaderBoards
         )
       );
+      this.sessionStorageService.setObjectItem<Array<LeaderBoard>>(SessionStorageKeys.LeaderBoard, this.leaderBoards());
       this.loaderService.toggleLoader();
     })
   }
@@ -69,7 +74,10 @@ export class LeaderBoardComponent {
     return new Promise((resolve) => {
       this.loaderService.toggleLoader();
       this.saveScore(userData).subscribe(() => {
+        this.scoreRecorded.set(true);
         this.loaderService.toggleLoader();
+        this.sessionStorageService.setObjectItem<boolean>(SessionStorageKeys.ScoreRecorded, true);
+        this.leaderBoardsService.saveNewLeaderBoard(this.leaderBoards());
         resolve(); 
       });
     })
@@ -83,8 +91,7 @@ export class LeaderBoardComponent {
   public startNewGame() {
     this.boggleService.loadBoard(CommonConstant.NUMERIC.SIX, true).then(() => {
       requestAnimationFrame(() => {
-        this.tileService.cacheTileElements();
-        this.tileService.cacheTileRects();
+        
       });
       this.timerService.timerStart();
       this.timerService.getRemainingTime();
@@ -95,7 +102,11 @@ export class LeaderBoardComponent {
       this.sessionStorageService.setObjectItem<Array<string>>(SessionStorageKeys.CorrectWords, new Array<string>());
       this.boggleService.overAllScore = signal(CommonConstant.NUMERIC.ZERO);
       this.leaderBoards = signal<Array<LeaderBoard>>(new Array<LeaderBoard>());
+      this.sessionStorageService.remove(SessionStorageKeys.LeaderBoard);
+      this.sessionStorageService.remove(SessionStorageKeys.UserData);
       this.leaderBoardsService.userName.set("");
+      this.scoreRecorded.set(false);
+      this.sessionStorageService.setObjectItem<boolean>(SessionStorageKeys.ScoreRecorded, false);
 
       this.hasFinalized = false;
     });

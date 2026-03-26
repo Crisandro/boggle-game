@@ -65,6 +65,10 @@ export class BoggleService {
           this.validWords.update(validWords => validWords = this.boardData()?.words);
           this.sessionStorageService.setObjectItem<BoggleResponse>(SessionStorageKeys.CurrentBoard, boggleResponse);
           this.loaderService.toggleLoader();
+          requestAnimationFrame(() => {
+            this.tileService.cacheTileElements();
+            this.tileService.cacheTileRects();
+          });
           resolve();
         });
       }

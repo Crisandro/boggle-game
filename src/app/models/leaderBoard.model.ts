@@ -13,3 +13,12 @@ export class CreatedAt {
     public _nanoseconds?: number
   ) {}
 }
+
+export class UserData {
+  constructor(
+    public name?: string,
+    public currentRank?: number,
+    public topWords?: Array<string>,
+    public overAllScore?: number
+  ) {}
+}

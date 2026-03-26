@@ -18,10 +18,11 @@
   </div>
   <div class="leaderboard-form">
     <div class="new-topScore">
-      <div *ngIf="10 > leaderBoardsService.currentRank()">New Top Score! Please enter your name.</div>
-      <div *ngIf="10 < leaderBoardsService.currentRank()">You did your best, Keep up the leader board next time!</div>
+      <div *ngIf="scoreRecorded()">Congratiolations!</div>
+      <div *ngIf="10 > leaderBoardsService.currentRank() && !scoreRecorded()">New Top Score! Please enter your name.</div>
+      <div *ngIf="10 <= leaderBoardsService.currentRank()">You did your best, Loser!</div>
       <div class="new-Score">{{ this.boggleService.overAllScore() }}</div>
-      <div *ngIf="10 > leaderBoardsService.currentRank()" class="top-score-form">
+      <div *ngIf="10 > leaderBoardsService.currentRank() && !scoreRecorded()" class="top-score-form">
         <div id="userName">
           <input
             type="text"
